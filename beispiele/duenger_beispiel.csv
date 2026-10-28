@@ -1,0 +1,13 @@
+Name;Formel;Typ;Dichte [g/mL];Löslichkeit [g/L];Tank;Vorhanden;Notiz;NO3_N [%];NH4_N [%];P [%];K [%];Ca [%];Mg [%];S [%];Fe [%];Mn [%];Zn [%];B [%];Cu [%];Mo [%];Na [%];Cl [%];Si [%]
+Calciumnitrat (technisch);5Ca(NO3)2·NH4NO3·10H2O;fest;;1200;auto;ja;Kalksalpeter;14,4;1,1;;;19;;;;;;;;;;;
+Kaliumnitrat;KNO3;fest;;316;auto;ja;;13,85;;;38,67;;;;;;;;;;;;
+Monokaliumphosphat;KH2PO4;fest;;226;auto;ja;MKP;;;22,76;28,73;;;;;;;;;;;;
+Magnesiumsulfat;MgSO4·7H2O;fest;;710;auto;ja;Bittersalz;;;;;;9,86;13,01;;;;;;;;;
+Kaliumsulfat;K2SO4;fest;;111;auto;ja;;;;;44,87;;;18,4;;;;;;;;;
+Magnesiumnitrat;Mg(NO3)2·6H2O;fest;;1250;auto;ja;;10,93;;;;;9,48;;;;;;;;;;
+Eisenchelat DTPA 11 %;Fe-DTPA;fest;;;auto;ja;;;;;;;;;11;;;;;;;;
+Mangansulfat;MnSO4·H2O;fest;;762;auto;ja;;;;;;;;18,97;;32,5;;;;;;;
+Zinksulfat;ZnSO4·7H2O;fest;;965;auto;ja;;;;;;;;11,15;;;22,74;;;;;;
+Borsäure;H3BO3;fest;;47;auto;ja;;;;;;;;;;;;17,48;;;;;
+Kupfersulfat;CuSO4·5H2O;fest;;320;auto;ja;;;;;;;;12,84;;;;;25,45;;;;
+Natriummolybdat;Na2MoO4·2H2O;fest;;840;auto;ja;;;;;;;;;;;;;;39,66;19;;
