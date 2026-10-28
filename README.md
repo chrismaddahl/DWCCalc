@@ -2,6 +2,9 @@
 
 Desktop-Programm zur Berechnung von Nährlösungen für Hydrokultur – eine schlanke Neuentwicklung nach dem Vorbild von HydroBuddy.
 
+<img width="1956" height="1189" alt="grafik" src="https://github.com/user-attachments/assets/24798ca5-d9b7-4c97-8b4f-e3d0d3af671b" />
+
+
 ## Starten
 
 `start.bat` doppelklicken. Beim ersten Start wird eine Python-Umgebung eingerichtet (Python 3.10 oder neuer muss installiert sein).
