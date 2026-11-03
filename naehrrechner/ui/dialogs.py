@@ -109,13 +109,19 @@ class FertilizerDialog(QDialog):
         self.available = QCheckBox("im Bestand vorhanden")
         self.available.setChecked(f.available)
         self.note = QLineEdit(f.note)
+        self.basis = combo([("Massen-% (g je 100 g)", "w"), ("g je 100 mL (w/v)", "v")])
+        self.basis.setToolTip("Flüssigdünger: Gehalte wie auf dem Etikett eingeben. Steht dort g/L,\n"
+                              "durch 10 teilen. Gespeichert wird in Massen-%, umgerechnet über die Dichte.")
+        self._basis = "w"
         self.typ.currentIndexChanged.connect(self._typ_changed)
+        self.basis.currentIndexChanged.connect(self._basis_changed)
 
         form = QFormLayout()
         form.addRow("Name", self.name)
         form.addRow("Formel", self.formula)
         form.addRow("Typ", self.typ)
         form.addRow("Dichte [g/mL]", self.density)
+        form.addRow("Gehalte bezogen auf", self.basis)
         form.addRow("Löslichkeit [g/L]", self.solubility)
         form.addRow("Konzentrat-Tank", self.tank)
         form.addRow("", self.available)
@@ -135,7 +141,8 @@ class FertilizerDialog(QDialog):
             else:
                 self.table.setItem(r, 2, readonly_item("Element"))
 
-        hint = QLabel("Gehalte in Massen-% wie auf dem Etikett. Bei P, K, Ca, Mg, S, Na, Si kann die "
+        hint = QLabel("Gehalte wie auf dem Etikett, bei Flüssigdüngern wahlweise in g je 100 mL. "
+                      "Bei P, K, Ca, Mg, S, Na, Si kann die "
                       "Oxidform (z. B. P₂O₅, K₂O) gewählt werden – umgerechnet wird beim Speichern. "
                       "Komma oder Punkt als Dezimalzeichen.")
         hint.setWordWrap(True)
@@ -150,17 +157,46 @@ class FertilizerDialog(QDialog):
         self._typ_changed()
 
     def _typ_changed(self):
-        self.density.setEnabled(bool(self.typ.currentData()))
+        liquid = bool(self.typ.currentData())
+        self.density.setEnabled(liquid)
+        if not liquid:
+            self.basis.setCurrentIndex(0)
+        self.basis.setEnabled(liquid)
+
+    def _basis_changed(self):
+        """Eingetragene Werte zwischen Massen-% und g/100 mL umrechnen."""
+        new = self.basis.currentData()
+        if new == self._basis:
+            return
+        density = self.density.value()
+        if not density:
+            QMessageBox.warning(self, "Dichte fehlt", "Zum Umrechnen bitte zuerst die Dichte eingeben.")
+            self.basis.blockSignals(True)
+            self.basis.setCurrentIndex(self.basis.findData(self._basis))
+            self.basis.blockSignals(False)
+            return
+        factor = density if new == "v" else 1 / density
+        for r in range(self.table.rowCount()):
+            v = cell_number(self.table, r, 1)
+            if v is not None:
+                self.table.setItem(r, 1, number_item(round(v * factor, 4)))
+        self._basis = new
+        self.table.horizontalHeaderItem(1).setText("Gehalt [g/100 mL]" if new == "v" else "Gehalt [%]")
 
     def accept(self):
         if not _require_name(self, self.name, self.taken, self.fert.name):
             return
+        per_volume = self.basis.currentData() == "v"
+        if per_volume and not self.density.value():
+            QMessageBox.warning(self, "Dichte fehlt", "Für Gehalte in g je 100 mL wird die Dichte gebraucht.")
+            return
+        to_mass = 1 / self.density.value() if per_volume else 1.0
         comp = {}
         for r, e in enumerate(NUTRIENTS):
             v = cell_number(self.table, r, 1)
             if v:
                 factor = self.forms[r].currentData() if r in self.forms else 1.0
-                comp[e.key] = v * factor
+                comp[e.key] = v * factor * to_mass
         if not comp:
             QMessageBox.warning(self, "Zusammensetzung fehlt", "Bitte mindestens einen Nährstoffgehalt eingeben.")
             return

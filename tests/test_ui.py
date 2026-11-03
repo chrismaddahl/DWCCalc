@@ -246,3 +246,32 @@ def test_three_tanks_ui(app):
     assert c.get_state()["tanks"] == 3
     c.set_state({"split": False, "concentrate": True})      # Stand aus älterer Version
     assert c.split.currentData() == 1
+
+
+def test_fertilizer_dialog_per_volume(app, monkeypatch):
+    """Flüssigdünger in g/100 mL eingeben: gespeichert wird Massen-% über die Dichte."""
+    from naehrrechner.core.elements import NUTRIENTS
+    from naehrrechner.core.models import Fertilizer
+    from naehrrechner.ui.dialogs import FertilizerDialog
+    from naehrrechner.ui.widgets import cell_number, number_item
+    f = Fertilizer("Flüssig Ca", {"Ca": 10.0, "Mn": 0.5}, liquid=True, density=1.35)
+    dlg = FertilizerDialog(f, set())
+    row = {e.key: r for r, e in enumerate(NUTRIENTS)}
+    dlg.basis.setCurrentIndex(dlg.basis.findData("v"))
+    assert cell_number(dlg.table, row["Ca"], 1) == pytest.approx(13.5)
+    assert dlg.table.horizontalHeaderItem(1).text() == "Gehalt [g/100 mL]"
+    dlg.table.setItem(row["Zn"], 1, number_item(0.675))
+    dlg.accept()
+    assert f.composition["Ca"] == pytest.approx(10.0)
+    assert f.composition["Zn"] == pytest.approx(0.5)
+    # zurückschalten rechnet wieder in Massen-%
+    dlg2 = FertilizerDialog(f, set())
+    dlg2.basis.setCurrentIndex(1)
+    dlg2.basis.setCurrentIndex(0)
+    assert cell_number(dlg2.table, row["Mn"], 1) == pytest.approx(0.5)
+    # ohne Dichte bleibt es bei Massen-%
+    dlg3 = FertilizerDialog(Fertilizer("x", {"K": 5}, liquid=True), set())
+    import naehrrechner.ui.dialogs as d
+    monkeypatch.setattr(d.QMessageBox, "warning", staticmethod(lambda *a, **k: None))
+    dlg3.basis.setCurrentIndex(1)
+    assert dlg3.basis.currentData() == "w"
