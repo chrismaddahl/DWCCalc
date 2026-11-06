@@ -1,0 +1,55 @@
+# Baut die Windows-exe. Bei einem Tag wie v0.2.0 entsteht ein GitHub-Release mit der ZIP-Datei,
+# beim manuellen Start (Actions -> Run workflow) nur ein Download unter "Artifacts".
+name: Windows-Build
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Abhängigkeiten
+        run: python -m pip install -r requirements-build.txt
+
+      - name: Tests
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: python -m pytest -q
+
+      - name: Tag und Programmversion vergleichen
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: bash
+        run: |
+          version=$(python -c "import naehrrechner; print(naehrrechner.__version__)")
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME passt nicht zu __version__ $version" >&2
+            exit 1
+          fi
+
+      - name: exe bauen
+        run: python packaging/build_exe.py
+
+      - name: Als Artifact ablegen
+        uses: actions/upload-artifact@v4
+        with:
+          name: Naehrloesungsrechner-windows
+          path: dist/*.zip
+
+      - name: Release anlegen
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: gh release create "$GITHUB_REF_NAME" dist/*.zip --title "$GITHUB_REF_NAME" --generate-notes

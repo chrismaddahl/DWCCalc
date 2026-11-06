@@ -7,7 +7,12 @@ Desktop-Programm zur Berechnung von Nährlösungen für Hydrokultur – eine sch
 
 ## Starten
 
-`start.bat` doppelklicken. Beim ersten Start wird eine Python-Umgebung eingerichtet (Python 3.10 oder neuer muss installiert sein).
+**Ohne Python:** unter *Releases* die Datei `Naehrloesungsrechner-…-windows.zip` herunterladen, entpacken und
+`Naehrloesungsrechner.exe` starten. Windows warnt beim ersten Start („Der Computer wurde durch Windows geschützt“),
+weil die exe nicht signiert ist: *Weitere Informationen* → *Trotzdem ausführen*. Beispiel-Dünger zum Importieren
+liegen im Ordner `Beispiele`.
+
+**Mit Python:** `start.bat` doppelklicken. Beim ersten Start wird eine Python-Umgebung eingerichtet (Python 3.10 oder neuer muss installiert sein).
 
 Die Daten liegen in `%APPDATA%\Naehrloesungsrechner\naehrrechner.db` (siehe *Datei → Speicherort der Datenbank*).
 
@@ -46,3 +51,23 @@ Im Ordner `beispiele` liegen optionale Beispieldaten (12 gängige Nährsalze, ei
 ```
 .venv\Scripts\python -m pytest tests
 ```
+
+## exe bauen
+
+Lokal (Ergebnis in `dist/`, inklusive ZIP und Selbsttest der exe):
+
+```
+.venv\Scripts\python -m pip install -r requirements-build.txt
+.venv\Scripts\python packaginguild_exe.py
+```
+
+Auf GitHub baut `.github/workflows/release.yml` die exe automatisch. Neue Version veröffentlichen:
+`__version__` in `naehrrechner/__init__.py` erhöhen, committen, dann
+
+```
+git tag v0.2.0
+git push origin main --tags
+```
+
+Der Tag muss zur Version passen. Danach liegt die ZIP-Datei unter *Releases*. Ohne Tag lässt sich der Build unter
+*Actions → Windows-Build → Run workflow* starten; die ZIP-Datei steht dann unter *Artifacts*.
