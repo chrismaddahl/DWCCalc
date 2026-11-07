@@ -5,6 +5,10 @@ Desktop-Programm zur Berechnung von Nährlösungen für Hydrokultur – eine sch
 <img width="1956" height="1189" alt="grafik" src="https://github.com/user-attachments/assets/24798ca5-d9b7-4c97-8b4f-e3d0d3af671b" />
 
 
+> **Mit KI erstellt.** Der Programmcode dieses Projekts wurde vollständig von einer KI (Claude von Anthropic)
+> geschrieben. Idee, Anforderungen, Entscheidungen und Praxistests stammen vom Menschen. Ergebnisse ohne Gewähr –
+> Details unter [Mit KI erstellt](#mit-ki-erstellt).
+
 ## Starten
 
 **Ohne Python:** unter *Releases* die Datei `Naehrloesungsrechner-…-windows.zip` herunterladen, entpacken und
@@ -71,3 +75,38 @@ git push origin main --tags
 
 Der Tag muss zur Version passen. Danach liegt die ZIP-Datei unter *Releases*. Ohne Tag lässt sich der Build unter
 *Actions → Windows-Build → Run workflow* starten; die ZIP-Datei steht dann unter *Artifacts*.
+
+## Mit KI erstellt
+
+Dieses Programm ist im Oktober und November 2026 in Zusammenarbeit zwischen einem Menschen
+([chrismaddahl](https://github.com/chrismaddahl)) und der KI **Claude Opus 5.5** von Anthropic entstanden,
+im Programm Claude Code. Die Arbeit war so aufgeteilt:
+
+**Mensch**
+- Idee: HydroBuddy auf das Wesentliche verschlanken und seine Schwächen beheben (z. B. Komma als Dezimalzeichen).
+- Anforderungen und Entscheidungen: Funktionsumfang, nur mg/L, CSV statt Altdaten, Merkzettel DIN A5 quer,
+  Herkunft der Nährstoffe, Prioritäten, Varianten nebeneinander, A/B/C-Aufteilung, exe zum Weitergeben.
+- Testen in der Praxis: echte Ansätze gemischt, Fehler gemeldet (z. B. Absturz beim Drucken, Ausfällung in Tank B),
+  Ergebnisse mit HydroBuddy verglichen.
+- Daten: Dünger mit ihren Gehalten, Fotos der Etiketten.
+
+**KI (Claude)**
+- Konzept und Aufbau des Programms.
+- Den gesamten Programmcode: Rechenkern und Optimierer (gewichtete NNLS, MILP für die automatische Düngerauswahl),
+  SQLite-Datenbank, CSV-Import und -Export, Oberfläche mit PySide6, Merkzettel und PDF.
+- Die fachlichen Modelle im Code: Oxid-Umrechnung, Tankzuordnung, EC-Schätzung, Ausfällungsprüfung,
+  Umrechnung von g/100 mL in Massen-%.
+- 52 automatische Tests sowie Fehlersuche und Korrekturen zu den gemeldeten Problemen.
+- Den Build der Windows-exe, den GitHub-Workflow und diese Dokumentation, einschließlich dieses Hinweises.
+
+Quellcode von HydroBuddy wurde nicht übernommen; das Programm ist eine eigenständige Neuentwicklung, deren
+Funktionsumfang sich an HydroBuddy orientiert.
+
+**Grenzen und Haftung**
+- KI kann Fehler machen, auch solche, die Tests und Praxistests nicht aufdecken. Eine fachliche Prüfung der
+  Rechenwege durch Agrarchemiker oder vergleichbare Fachleute hat nicht stattgefunden.
+- Die EC ist eine Schätzung. Die Ausfällungsprüfung arbeitet mit groben Richtwerten, weil der pH-Wert im Tank
+  nicht bekannt ist; eine fehlende Warnung ist keine Garantie.
+- Die Ergebnisse hängen von den eingetragenen Düngerdaten ab. Gehalte vom Etikett übernehmen (Massen-%),
+  fertige Lösungen nachmessen (EC, pH).
+- Nutzung auf eigene Verantwortung, ohne Gewähr für Richtigkeit oder Eignung.

@@ -947,7 +947,10 @@ class MainWindow(QMainWindow):
         about.triggered.connect(lambda: QMessageBox.about(
             self, "Über", f"<b>Nährlösungsrechner</b> {__version__}<br>"
                           "Berechnung von Nährlösungen für Hydrokultur.<br>"
-                          "Inspiriert von HydroBuddy (Daniel Fernández)."))
+                          "Inspiriert von HydroBuddy (Daniel Fernández).<br><br>"
+                          "Der Programmcode wurde mit KI erstellt (Claude von Anthropic), "
+                          "Anforderungen und Praxistests stammen vom Menschen.<br>"
+                          "Alle Ergebnisse ohne Gewähr – Etiketten prüfen, EC und pH nachmessen."))
         self.menuBar().addMenu("&Hilfe").addAction(about)
         self.restore_session()
 
